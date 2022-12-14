@@ -1,22 +1,23 @@
 const ffmpeg = require('fluent-ffmpeg');
 const fs = require('fs');
-
-let aspectRatioWidth = 6;
-let aspectRatioHeight = 9;
+const settings = require('./settings.json')
 
 let folderPath = './videos/';
-
+let re = /(?:\.([^.]+))?$/;
+let ext;
 fs.readdirSync(folderPath).forEach(file => {
-    execute(file);
+    ext = re.exec(file)[1]; 
+    if(settings.video_formats.includes(ext.toLowerCase())) execute(file);
   });
 
 async function execute(filename){
-    let newDimensions = await getNewDimensions(folderPath+filename, aspectRatioWidth, aspectRatioHeight);
+    let newDimensions = await getNewDimensions(folderPath+filename, settings.aspectRatioWidth, settings.aspectRatioHeight);
 
     //Generating video
     ffmpeg(folderPath+filename)
     .complexFilter([
-        `crop=${newDimensions.width}:${newDimensions.height}:in_w/2:in_h/2[output]`
+        `crop=${newDimensions.width}:${newDimensions.height}:in_w/2:in_h/2[cropped]`,
+        `[cropped]scale=${settings.width}:${settings.height}[output]`
     
     ], 'output')
     .saveToFile(`outputs/${filename}`)

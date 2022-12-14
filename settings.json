@@ -1,0 +1,7 @@
+{
+    "aspectRatioWidth": 6,
+    "aspectRatioHeight": 9,
+    "width": 1080,
+    "height": 1920,
+    "video_formats": ["mp4", "mov", "avi"]
+}
